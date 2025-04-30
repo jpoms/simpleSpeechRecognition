@@ -7,14 +7,13 @@ def runAsThread(f: Callable):
             thread.start()
         return wrappedFunc
 
-def lockedBy(l: threading.Lock):
+def lockedBy(lock: threading.Lock, wait: bool = False):
     def innerFunc(f: Callable):
         def wrappedFunc(*args, **kwargs):
-            ## TODO make it visible somehow that actions are ignored as long as the lock is not released.
-            if(l.locked()):
+            if(not wait and lock.locked()):
                 return
-            l.acquire()
+            lock.acquire()
             f(*args, **kwargs)
-            l.release()
+            lock.release()
         return wrappedFunc
     return innerFunc

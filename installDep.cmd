@@ -21,5 +21,6 @@ pause
 pip install --upgrade pip
 pip install --upgrade transformers datasets[audio] accelerate
 pip install tkinterdnd2
+:: pip install -U pyinstaller
 
 cmd /k
