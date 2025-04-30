@@ -1,5 +1,6 @@
 __pycache__
+.venv
 *.blend
 *.blend1
 *.mp3
-.venv
+*.url
