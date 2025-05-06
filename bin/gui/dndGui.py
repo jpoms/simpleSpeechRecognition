@@ -9,7 +9,6 @@ from bin.gui.dndGuiStates import DndGuiStates as STATE
 from bin.speechRecognition import SpeechRecognition
 from bin.threadHelperFunctions import lockedBy, runAsThread
 
-
 class DnDGui:
     state = STATE.WAIT_FOR_INPUT
     busy = threading.Lock()
@@ -147,9 +146,10 @@ class DnDGui:
     @lockedBy(lock = busy)
     def submitRun(self):
         self.handleStateChange(STATE.PROCESSING_INPUT)
-        result = self.sR.process(self.filename)
-        ###### TODO PROVIDE MEANINGFUL OUTPUT
-        print(result)
+        result = self.sR.process(sample=self.filename, 
+                        filename1=self.outFileName1.get(), 
+                        filename2=self.outFileName2.get())
+        print(f"result: {result.get('text')}")
         self.handleStateChange(STATE.READY_INPUT)
 
     @runAsThread

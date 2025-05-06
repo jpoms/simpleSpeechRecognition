@@ -2,6 +2,9 @@ import torch
 from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
 from datasets import load_dataset
 
+from bin.writer.writer import Writer
+from bin.threadHelperFunctions import runAsThread
+
 ###############################
 ## https://huggingface.co/openai/whisper-large-v3
 ###############################
@@ -29,5 +32,24 @@ class SpeechRecognition:
             device=device,
         )
 
-    def process(self, sample:str):
-        return self.pipe(sample, return_timestamps="word")
+    def process(self, sample: str, filename1: str = False, filename2: str = False):
+        result = self.pipe(sample, return_timestamps="word")
+        writer = Writer()
+        threads = []
+
+        if(filename1):
+            threads.append(writer.writeToFileThread(filename=filename1, text=[result.get('text')]))
+
+        if(filename2):
+            chunks = []
+            for chunk in result.get('chunks'):
+                chunks.append(f"{chunk.get('text')};{chunk.get('timestamp')}")
+            threads.append(writer.writeToFileThread(filename=filename2, text=chunks))
+
+        for t in threads:
+            t.start()
+
+        for t in threads:
+            t.join()
+
+        return result
