@@ -8,18 +8,22 @@ bpy.context.scene.sequence_editor_clear()
 if not bpy.context.scene.sequence_editor:
     bpy.context.scene.sequence_editor_create()
 
-scene = bpy.context.scene
+###################
+#### CONSTANTS ####
+###################
 
-FRAMES_PER_SECOND = bpy.context.scene.render.fps
+SEQ_EDITOR = bpy.context.scene.sequence_editor
+SCENE_FRAMES_PER_SECOND = bpy.context.scene.render.fps
 SCENE_RESOLUTION_X = bpy.context.scene.render.resolution_x
 SCENE_RESOLUTION_Y = bpy.context.scene.render.resolution_y
 SCENE_FRAME_START = bpy.context.scene.frame_start
 SCENE_FRAME_END = bpy.context.scene.frame_end
 
+INPUT_FILE = '<<FILENAME>>'
 AVERAGE_CHAR_WIDTH = 32
 MAX_WIDTH = SCENE_RESOLUTION_X * 0.8
 
-seq_editor = scene.sequence_editor
+###################
 
 def castFloat(text: str):
     try:
@@ -52,7 +56,7 @@ def parseFile(filename: str):
     return subtitles
 
 class Subtitle:
-    def __init__(self, framesPerSecond: int = 60):
+    def __init__(self, framesPerSecond: int = SCENE_FRAMES_PER_SECOND):
         self.framesPerSecond = framesPerSecond
         self.text = ''
         self.start = 0
@@ -96,7 +100,7 @@ def merge_subtitles(subtitles: list[Subtitle]):
 
 def create_subtitle(start: int, end: int, text: str, blend_time: int = 10, crop_time: int = 30, channel: int = 1):
     # creates effect strip and sets properties
-    strip = seq_editor.sequences.new_effect(
+    strip = SEQ_EDITOR.sequences.new_effect(
         name="Subtitle",
         type='TEXT',
         channel=channel,
@@ -124,7 +128,7 @@ def create_subtitle(start: int, end: int, text: str, blend_time: int = 10, crop_
 
     return strip
 
-subtitles = parseFile(filename = '<<filename>>')
+subtitles = parseFile(INPUT_FILE)
 mergedSubtitles = merge_subtitles(subtitles)
 for sub in mergedSubtitles:
     create_subtitle(start=sub.startFrame, end=sub.endFrame, text=sub.text, channel=2)
