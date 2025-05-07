@@ -97,14 +97,18 @@ class DnDGui:
         else:
             messagebox.showerror(title="INVALID STATE CHANGE", message="UNKNOWN STATE CHANGE")
             raise Exception("INVALID STATE CHANGE - UNKNOWN STATE CHANGE")
-    
+
     def setConfigForGuiState(self, state: STATE):
         if(state==STATE.WAIT_FOR_INPUT):
             self.state = state
+            self.filename = ''
+            self.labelDnD.config(text=">> Drag and Drop Mp3 File <<")
             self.runButton.config(state="disabled")
             self.resetButton.config(state="active")
             self.outFileName1Input.config(state="readonly")
             self.outFileName2Input.config(state="readonly")
+            self.outFileName1.set('')
+            self.outFileName2.set('')
         elif(state==STATE.READY_INPUT):
             self.state = state
             self.runButton.config(state="active")
@@ -155,10 +159,6 @@ class DnDGui:
     @runAsThread
     @lockedBy(lock = busy)
     def submitReset(self):
-        self.filename = ''
-        self.labelDnD.config(text=">> Drag and Drop Mp3 File <<")
-        self.outFileName1.set('')
-        self.outFileName2.set('')
         self.handleStateChange(STATE.WAIT_FOR_INPUT)
 
     ### GUI MAIN LOOP
